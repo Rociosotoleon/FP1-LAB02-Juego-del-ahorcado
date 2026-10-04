@@ -70,7 +70,7 @@ def ha_ganado(palabra_enmascarada: str) -> bool:
  
 
 def mostrar_estado(palabra_enmascarada, letras_usadas, intentos_restantes):
-    print(f"Estado: {" ".join(palabra_enmascarada)}")
+    print(f"Estado: {' '.join(palabra_enmascarada)}")
     if letras_usadas == "":
         print("Letras usadas: ninguna")
     else:
@@ -79,20 +79,51 @@ def mostrar_estado(palabra_enmascarada, letras_usadas, intentos_restantes):
 
     
 
-def pedir_letra(letras_usadas):
-    letra = input("Introduce una letra:")
-    while len(letra) != 1 or not letra.isalpha():
+def pedir_letra(letras_usadas: str) -> str:
+    '''solicita al jugador que introduzca una letra
+    y se asegura de que la entrada proporcionada por el
+    jugador sea válida
+    
+    Parámetros:'''
+    letra = input("Introduce una letra:").lower()
+    while len(letra) != 1 or not letra.isalpha() or letra in letras_usadas:
         print("Solo puedes introducir una letra")
-        letra = input("Introduce otra letra:")
+        letra = input("Introduce otra letra, no repitas:").lower()
     
 
+    return letra.lower()     
+     
     
+def jugar(palabra_secreta, numero_max_intentos = 6):
+    palabra_secreta = normalizar(palabra_secreta)
 
+    if palabra_secreta == "":
+        return None
     
-
-
     
+    palabra_enmascarada = enmascarar(palabra_secreta)
+    intentos_restantes = numero_max_intentos
+    letras_usadas = ""
+   
+    while intentos_restantes > 0 and not ha_ganado(palabra_enmascarada):
+        mostrar_estado(palabra_enmascarada, letras_usadas, intentos_restantes) 
+        letra = pedir_letra(letras_usadas)
+        letras_usadas += letra 
+        if letra not in palabra_secreta:
+            print("La letra no está en la palabra")
+            intentos_restantes -= 1
+        else:
+            print("La letra está en la palabra")
+            palabra_enmascarada = enmascarar(palabra_secreta, letras_usadas)
 
-# TODO: Implementa la función jugar
+    if ha_ganado(palabra_enmascarada):
+        print("Enhorabuena, has ganado!")
+    else: 
+        print(f"Lo siento, has perdido, la palabra secreta era {palabra_secreta}")
 
-# TODO: Escribe el programa principal
+palabra_secreta = elige_palabra()
+jugar(palabra_secreta)
+
+
+
+
